@@ -1,0 +1,25 @@
+/**
+ * Editor-only adjustments for the process blocks.
+ */
+
+.wp-block-process-blocks-process__summary {
+	pointer-events: none;
+	user-select: none;
+}
+
+.wp-block-process-blocks-step__toggle {
+	cursor: default;
+}
+
+.wp-block-process-blocks-step__title-text {
+	margin: 0;
+}
+
+.wp-block-process-blocks-process__steps,
+.wp-block-process-blocks-section__steps {
+	> .block-list-appender {
+		position: static;
+		justify-self: start;
+		margin: 0;
+	}
+}

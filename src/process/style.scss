@@ -1,0 +1,503 @@
+/**
+ * Process block styles, shared between the frontend and editor.
+ *
+ * Colours derive from the theme's text colour and presets, so the block
+ * adapts to its surroundings. Override the custom properties to customise.
+ */
+
+.wp-block-process-blocks-process {
+	--process-blocks--accent: var( --wp--preset--color--primary, currentcolor );
+	--process-blocks--surface: var( --wp--preset--color--base, canvas );
+	--process-blocks--border: color-mix( in srgb, currentcolor 15%, transparent );
+	--process-blocks--muted: color-mix( in srgb, currentcolor 4%, transparent );
+	--process-blocks--subtle-text: color-mix( in srgb, currentcolor 65%, transparent );
+	--process-blocks--radius: 0.5rem;
+	--process-blocks--gap: var( --wp--style--block-gap, 1.5rem );
+	// The unit is required, as this is used in calc().
+	/* stylelint-disable-next-line length-zero-no-unit */
+	--process-blocks--sticky-top: var( --wp-admin--admin-bar--height, 0px );
+	--process-blocks--toggle-size: 1.75rem;
+
+	// Space above steps when scrolled to; updated to clear the bar by view.js.
+	--process-blocks--scroll-offset: calc( var( --process-blocks--sticky-top ) + 6rem );
+}
+
+/*
+ * Summary checklist.
+ */
+.wp-block-process-blocks-process__summary {
+	margin-block-end: var( --process-blocks--gap );
+	padding: 1.25em 1.5em;
+	border: 1px solid var( --process-blocks--border );
+	border-radius: var( --process-blocks--radius );
+	background: var( --process-blocks--muted );
+}
+
+.wp-block-process-blocks-process__summary-header {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5em 1em;
+	align-items: baseline;
+	justify-content: space-between;
+	margin-block-end: 1em;
+}
+
+.wp-block-process-blocks-process__count {
+	margin: 0;
+	font-weight: 600;
+}
+
+.wp-block-process-blocks-process__reset {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	font-size: 0.875em;
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+	cursor: pointer;
+
+	&:disabled,
+	&[disabled] {
+		opacity: 0.5;
+		text-decoration: none;
+		cursor: default;
+	}
+}
+
+.wp-block-process-blocks-process__checklist {
+	display: grid;
+	gap: 0.375em 2em;
+	grid-template-columns: repeat( auto-fill, minmax( min( 100%, 16rem ), 1fr ) );
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	ol {
+		display: grid;
+		gap: 0.375em;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+}
+
+.wp-block-process-blocks-process__checklist-section {
+	display: grid;
+	gap: 0.5em;
+	align-content: start;
+}
+
+.wp-block-process-blocks-process__checklist-section-title {
+	color: var( --process-blocks--subtle-text );
+	font-size: 0.75em;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.wp-block-process-blocks-process__item {
+	margin: 0;
+
+	> a,
+	> span {
+		display: flex;
+		gap: 0.625em;
+		align-items: baseline;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	&.is-complete .wp-block-process-blocks-process__item-title {
+		color: var( --process-blocks--subtle-text );
+	}
+
+	> a:hover .wp-block-process-blocks-process__item-title,
+	> a:focus-visible .wp-block-process-blocks-process__item-title {
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
+	&.is-current {
+		font-weight: 600;
+	}
+}
+
+// Numbered circle, which becomes a check mark once complete.
+.wp-block-process-blocks-process__item-number {
+	position: relative;
+	display: inline-grid;
+	flex: none;
+	place-items: center;
+	width: 1.5em;
+	height: 1.5em;
+	border: 1px solid var( --process-blocks--border );
+	border-radius: 50%;
+	font-size: 0.75em;
+	font-variant-numeric: tabular-nums;
+	font-weight: 600;
+	line-height: 1;
+
+	.is-current > * > & {
+		border-color: var( --process-blocks--accent );
+		color: var( --process-blocks--accent );
+	}
+
+	.is-complete > * > & {
+		border-color: var( --process-blocks--accent );
+		background: var( --process-blocks--accent );
+		color: transparent;
+
+		&::after {
+			position: absolute;
+			top: 45%;
+			left: 50%;
+			width: 0.3em;
+			height: 0.6em;
+			border: solid var( --process-blocks--surface );
+			border-width: 0 0.15em 0.15em 0;
+			content: "";
+			transform: translate( -50%, -50% ) rotate( 45deg );
+		}
+	}
+}
+
+/*
+ * Sticky progress bar.
+ */
+.wp-block-process-blocks-process__bar {
+	position: sticky;
+	z-index: 10;
+	top: var( --process-blocks--sticky-top );
+	margin-block-end: var( --process-blocks--gap );
+	border-block-end: 1px solid var( --process-blocks--border );
+	background: var( --process-blocks--surface );
+
+	// Match the block's own background, if set.
+	.wp-block-process-blocks-process.has-background > & {
+		background: inherit;
+	}
+}
+
+.wp-block-process-blocks-process__bar-inner {
+	display: flex;
+	gap: 1em;
+	align-items: center;
+	justify-content: space-between;
+	padding-block: 0.75em 0.5em;
+}
+
+.wp-block-process-blocks-process__status {
+	display: grid;
+	min-width: 0;
+}
+
+.wp-block-process-blocks-process__status-label {
+	overflow: hidden;
+	color: var( --process-blocks--subtle-text );
+	font-size: 0.75em;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-overflow: ellipsis;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.wp-block-process-blocks-process__status-section::before {
+	margin-inline: 0.5em;
+	content: "·";
+}
+
+// The bar's height stays constant as the active step changes, so content
+// doesn't shift while scrolling.
+.wp-block-process-blocks-process__status-title {
+	overflow: hidden;
+	font-weight: 600;
+	line-height: 1.3;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+	@media ( max-width: 600px ) {
+		display: -webkit-box;
+		height: 2.6em;
+		white-space: normal;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+	}
+}
+
+// Stack the complete button and completed status in the same cell, so the
+// bar is sized to fit either.
+.wp-block-process-blocks-process__actions {
+	display: grid;
+	flex: none;
+	align-items: center;
+	justify-items: end;
+
+	> * {
+		grid-area: 1 / 1;
+	}
+
+	> .is-hidden {
+		visibility: hidden;
+	}
+}
+
+.wp-block-process-blocks-process__complete {
+	margin: 0;
+}
+
+// Compact button on small screens, overriding the theme's button styles.
+@media ( max-width: 600px ) {
+	.wp-block-process-blocks-process__bar .wp-block-process-blocks-process__complete {
+		padding: 0.625em 1em;
+		font-size: 0.875em;
+	}
+}
+
+.wp-block-process-blocks-process__completed {
+	display: inline-flex;
+	gap: 0.75em;
+	align-items: center;
+	font-size: 0.875em;
+}
+
+.wp-block-process-blocks-process__completed-label {
+	display: inline-flex;
+	gap: 0.4em;
+	align-items: center;
+	font-weight: 600;
+
+	&::before {
+		width: 0.35em;
+		height: 0.7em;
+		margin-inline: 0.2em 0.1em;
+		border: solid var( --process-blocks--accent );
+		border-width: 0 2px 2px 0;
+		content: "";
+		transform: translateY( -0.1em ) rotate( 45deg );
+	}
+}
+
+// Text-style buttons in the bar.
+.wp-block-process-blocks-process__undo,
+.wp-block-process-blocks-process__jump,
+.wp-block-process-blocks-process__restart {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+	cursor: pointer;
+
+	&[hidden] {
+		display: none;
+	}
+}
+
+.wp-block-process-blocks-process__jump,
+.wp-block-process-blocks-process__restart {
+	color: var( --process-blocks--accent );
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.wp-block-process-blocks-process__undo:hover,
+.wp-block-process-blocks-process__jump:hover,
+.wp-block-process-blocks-process__restart:hover {
+	text-decoration-thickness: 2px;
+}
+
+.wp-block-process-blocks-process__bar-meta {
+	display: flex;
+	gap: 1em;
+	align-items: baseline;
+	justify-content: space-between;
+	padding-block-end: 0.5em;
+	color: var( --process-blocks--subtle-text );
+	font-size: 0.8em;
+	line-height: 1.5;
+}
+
+.wp-block-process-blocks-process__jump {
+	&::before {
+		margin-inline-end: 0.35em;
+		content: "↓";
+	}
+
+	&.is-above::before {
+		content: "↑";
+	}
+}
+
+.wp-block-process-blocks-process__progress {
+	height: 3px;
+	margin-block-end: -1px;
+	background: var( --process-blocks--border );
+
+	> span {
+		display: block;
+		width: 0;
+		height: 100%;
+		background: var( --process-blocks--accent );
+		transition: width 300ms ease;
+
+		@media ( prefers-reduced-motion: reduce ) {
+			transition: none;
+		}
+	}
+}
+
+/*
+ * Steps and sections.
+ */
+.wp-block-process-blocks-process__steps {
+	display: grid;
+	gap: var( --process-blocks--gap );
+
+	> * {
+		margin-block: 0;
+	}
+}
+
+.wp-block-process-blocks-section {
+	display: grid;
+	gap: var( --process-blocks--gap );
+}
+
+.wp-block-process-blocks-section__title {
+	margin-block: 0;
+}
+
+.wp-block-process-blocks-section__steps {
+	display: grid;
+	gap: var( --process-blocks--gap );
+
+	> * {
+		margin-block: 0;
+	}
+}
+
+.wp-block-process-blocks-step {
+	padding: 1.25em 1.5em;
+	border: 1px solid var( --process-blocks--border );
+	border-radius: var( --process-blocks--radius );
+	scroll-margin-top: var( --process-blocks--scroll-offset );
+	transition: border-color 200ms ease, box-shadow 200ms ease;
+
+	@media ( prefers-reduced-motion: reduce ) {
+		transition: none;
+	}
+
+	&:focus {
+		outline: none;
+	}
+
+	&:focus-visible {
+		outline: 2px solid var( --process-blocks--accent );
+		outline-offset: 2px;
+	}
+
+	&.is-active {
+		border-color: var( --process-blocks--accent );
+		box-shadow: 0 0 0 1px var( --process-blocks--accent );
+	}
+}
+
+.wp-block-process-blocks-step__header {
+	display: flex;
+	gap: 0.875em;
+	align-items: flex-start;
+}
+
+.wp-block-process-blocks-step__title {
+	flex: 1;
+	min-width: 0;
+	margin: 0;
+	font-size: var( --wp--preset--font-size--large, 1.375em );
+}
+
+.wp-block-process-blocks-step__number {
+	display: block;
+	margin-block-end: 0.25em;
+	color: var( --process-blocks--accent );
+	font-size: max( 0.75rem, 0.4em );
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+
+	.is-complete & {
+		color: var( --process-blocks--subtle-text );
+	}
+}
+
+.wp-block-process-blocks-step__title-text {
+	display: block;
+}
+
+// Check-circle toggle for marking an individual step complete.
+.wp-block-process-blocks-step__toggle {
+	position: relative;
+	flex: none;
+	width: var( --process-blocks--toggle-size );
+	height: var( --process-blocks--toggle-size );
+	margin: 0;
+	padding: 0;
+	border: 2px solid var( --process-blocks--border );
+	border-radius: 50%;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+
+	&:hover {
+		border-color: var( --process-blocks--accent );
+	}
+
+	&:focus-visible {
+		outline: 2px solid var( --process-blocks--accent );
+		outline-offset: 2px;
+	}
+
+	.is-current > .wp-block-process-blocks-step__header > & {
+		border-color: var( --process-blocks--accent );
+	}
+
+	.is-complete > .wp-block-process-blocks-step__header > & {
+		border-color: var( --process-blocks--accent );
+		background: var( --process-blocks--accent );
+
+		&::after {
+			position: absolute;
+			top: 45%;
+			left: 50%;
+			width: 0.35rem;
+			height: 0.7rem;
+			border: solid var( --process-blocks--surface );
+			border-width: 0 2px 2px 0;
+			content: "";
+			transform: translate( -50%, -50% ) rotate( 45deg );
+		}
+	}
+}
+
+.wp-block-process-blocks-step__content {
+	margin-block-start: 1em;
+	padding-inline-start: calc( var( --process-blocks--toggle-size ) + 0.875em );
+
+	> :first-child {
+		margin-block-start: 0;
+	}
+
+	> :last-child {
+		margin-block-end: 0;
+	}
+
+	@media ( max-width: 600px ) {
+		padding-inline-start: 0;
+	}
+}

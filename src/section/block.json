@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "process-blocks/section",
+	"version": "0.1.0",
+	"title": "Process Section",
+	"category": "text",
+	"parent": [ "process-blocks/process" ],
+	"description": "A group of related steps within a process.",
+	"textdomain": "process-blocks",
+	"attributes": {
+		"title": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		}
+	},
+	"usesContext": [ "process-blocks/headingLevel" ],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

@@ -1,0 +1,14 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"landingPage": "/process-demo/",
+	"preferredVersions": {
+		"php": "8.3",
+		"wp": "latest"
+	},
+	"steps": [
+		{
+			"step": "wp-cli",
+			"command": "wp eval-file /wordpress/wp-content/plugins/process-blocks/demo/setup.php"
+		}
+	]
+}

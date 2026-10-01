@@ -1,0 +1,37 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "Process Blocks demo",
+		"description": "Step-by-step process blocks, with demo content.",
+		"author": "humanmade",
+		"categories": [ "Blocks" ]
+	},
+	"landingPage": "/process-demo/",
+	"preferredVersions": {
+		"php": "8.3",
+		"wp": "latest"
+	},
+	"features": {
+		"networking": true
+	},
+	"login": true,
+	"steps": [
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "git:directory",
+				"url": "https://github.com/humanmade/process-blocks",
+				"ref": "release",
+				"refType": "branch"
+			},
+			"options": {
+				"activate": true,
+				"targetFolderName": "process-blocks"
+			}
+		},
+		{
+			"step": "wp-cli",
+			"command": "wp eval-file /wordpress/wp-content/plugins/process-blocks/demo/setup.php"
+		}
+	]
+}

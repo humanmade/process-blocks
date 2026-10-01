@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<ruleset name="Process Blocks">
+	<description>Human Made coding standards for Process Blocks.</description>
+
+	<file>.</file>
+
+	<exclude-pattern>/build/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/vendor/*</exclude-pattern>
+
+	<arg name="extensions" value="php" />
+	<arg value="sp" />
+
+	<rule ref="HM" />
+
+	<config name="minimum_supported_wp_version" value="6.6" />
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="process-blocks" />
+			</property>
+		</properties>
+	</rule>
+</ruleset>
