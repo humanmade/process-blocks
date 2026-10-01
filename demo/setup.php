@@ -16,6 +16,11 @@ $pages = [
 		'title' => 'Brew pour-over coffee',
 		'file' => __DIR__ . '/simple.html',
 	],
+	// Adapted from iFixit, licensed under CC BY-NC-SA 3.0; see demo/README.md.
+	'ifixit-screen-replacement' => [
+		'title' => 'MacBook Neo Screen Replacement',
+		'file' => __DIR__ . '/ifixit.html',
+	],
 ];
 
 foreach ( $pages as $slug => $page ) {

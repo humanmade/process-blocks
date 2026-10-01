@@ -54,6 +54,7 @@ npm run dev
 
 - http://localhost:8888/process-demo/ (sections)
 - http://localhost:8888/process-demo-simple/ (flat steps)
+- http://localhost:8888/ifixit-screen-replacement/ (a long real-world guide, adapted from iFixit under CC BY-NC-SA; see [`demo/README.md`](demo/README.md))
 
 Use `npm start` to rebuild on changes, and `npm run env:stop` to stop.
 
