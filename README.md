@@ -54,11 +54,7 @@ composer install
 npm run dev
 ```
 
-`npm run dev` builds the plugin and starts [wp-env](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/) at http://localhost:8888 (log in with `admin` / `password`). Demo pages are created on start:
-
-- http://localhost:8888/process-demo/ (sections)
-- http://localhost:8888/process-demo-simple/ (flat steps)
-- http://localhost:8888/ifixit-screen-replacement/ (a long real-world guide, adapted from iFixit under CC BY-NC-SA; see [`demo/README.md`](demo/README.md))
+`npm run dev` builds the plugin and starts [wp-env](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/) at http://localhost:8888 (log in with `admin` / `password`).
 
 Use `npm start` to rebuild on changes, and `npm run env:stop` to stop.
 
