@@ -51,6 +51,11 @@ if ( empty( $global_styles['ID'] ) ) {
 	return;
 }
 
+// When the Global Styles post is newly created, its theme is set via
+// tax_input, which requires a user able to assign terms. WP-CLI has no
+// user, so assign the theme explicitly, or the styles never apply.
+wp_set_object_terms( $global_styles['ID'], wp_get_theme()->get_stylesheet(), 'wp_theme' );
+
 $config = json_decode( $global_styles['post_content'], true ) ?: [];
 $config['version'] = $config['version'] ?? WP_Theme_JSON::LATEST_SCHEMA;
 $config['isGlobalStylesUserThemeJSON'] = true;
