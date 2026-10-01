@@ -41,3 +41,24 @@ foreach ( $pages as $slug => $page ) {
 
 	\WP_CLI::success( sprintf( 'Demo page ready: %s', get_permalink( $post_id ) ) );
 }
+
+// Widen the theme's content area, giving Media & Text steps room for side-by-
+// side images and text. This is stored as a Global Styles customisation, as
+// if set in the Site Editor, so the theme itself is untouched.
+$global_styles = WP_Theme_JSON_Resolver::get_user_data_from_wp_global_styles( wp_get_theme(), true );
+if ( empty( $global_styles['ID'] ) ) {
+	\WP_CLI::warning( 'Could not set content width; the active theme may not support Global Styles.' );
+	return;
+}
+
+$config = json_decode( $global_styles['post_content'], true ) ?: [];
+$config['version'] = $config['version'] ?? WP_Theme_JSON::LATEST_SCHEMA;
+$config['isGlobalStylesUserThemeJSON'] = true;
+$config['settings']['layout']['contentSize'] = '960px';
+
+wp_update_post( [
+	'ID' => $global_styles['ID'],
+	'post_content' => wp_slash( wp_json_encode( $config ) ),
+] );
+
+\WP_CLI::success( 'Content width set to 960px.' );
