@@ -6,7 +6,7 @@
 		"author": "humanmade",
 		"categories": [ "Blocks" ]
 	},
-	"landingPage": "/process-demo/",
+	"landingPage": "/ifixit-screen-replacement/",
 	"preferredVersions": {
 		"php": "8.3",
 		"wp": "latest"

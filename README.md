@@ -1,33 +1,36 @@
 # Process Blocks
 
-Step-by-step process blocks for WordPress, in the style of Apple's developer tutorials and iFixit guides. Useful for runbooks, checklists, and how-to guides you work through repeatedly.
+Step-by-step process blocks for WordPress - useful for runbooks, checklists, and how-to guides you work through repeatedly.
 
 [![Try it in WordPress Playground](https://img.shields.io/badge/Try%20it-WordPress%20Playground-3858e9?logo=wordpress)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/humanmade/process-blocks/main/blueprint.json)
 
-## Blocks
+![Screenshot of a process](./screenshot.png)
 
-| Block | Name | Contains |
-| --- | --- | --- |
-| Process | `process-blocks/process` | Steps, **or** sections |
-| Process Section | `process-blocks/section` | Steps |
-| Process Step | `process-blocks/step` | Any blocks |
+## How it works
 
-A process is either `process → [ step, step, … ]` or `process → [ section → [ step, … ], section → [ step, … ] ]`. The editor enforces one or the other; the **Group steps into a section** button in the process's sidebar converts a flat process to a sectioned one.
+Process Blocks adds a new Process block to the WordPress block editor, allowing viewers to follow a step-by-step process.
 
-## Frontend
+Progress through steps is stored in the user's local storage, allowing persistent tracking of progress - a summary checklist allows quickly jumping to the next step. A "reset" button allows restarting the process again for easy repeatable processes.
 
-- **Summary checklist** at the top of the process, showing progress and a **Reset** button. It can be turned off per block.
-- **Sticky bar**, linked to scroll position: it shows the step you're reading, which is also highlighted. **Mark as complete** checks that step off and scrolls to the next incomplete step. Once a step is complete, the bar shows **Completed** with an **Undo** link.
-- **Current step link** in the bar's second row. When you've scrolled away from the current (first incomplete) step, **Back to step N** / **Jump to step N** takes you back to it. **Start again** appears there once every step is done.
-- **Check buttons** on each step, for completing steps out of order.
+Each step can contain arbitrary blocks, allowing for rich media directly in each step to assist users.
 
-The bar keeps a constant height as its contents change, so the page doesn't shift while scrolling.
+### Grouping
 
-Progress is saved to `localStorage`, keyed by post, process, and a hash of the step titles, so any edit to the steps discards stale progress.
+Steps can be grouped together into sections, allowing better clarity for longer complex processes.
 
-The frontend uses the [Interactivity API](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/). Derived state is mirrored in PHP (`register_state()` in `inc/namespace.php`), so the server render matches the client before saved progress loads.
+![Screenshot of summary for grouped process](./screenshot-groups.png)
 
-### Theming
+
+### Sticky header
+
+A sticky header follows the process as a user scrolls through. The convenient "Mark as complete" button allows completing a step and moving to the next one.
+
+![Screenshot of the sticky header](./screenshot-header.png)
+
+Plus, if you scroll away or reload the page, the quick "jump to step" link allows you to resume from your latest incomplete step.
+
+
+## Theming
 
 Styles are minimal and inherit from the theme. Buttons use the theme's `.wp-element-button` styles; colours derive from `currentColor` and presets. Override these custom properties on `.wp-block-process-blocks-process` to customise:
 
@@ -39,6 +42,7 @@ Styles are minimal and inherit from the theme. Buttons use the theme's `.wp-elem
 | `--process-blocks--muted` (summary background) | `currentcolor` at 4% |
 | `--process-blocks--radius` | `0.5rem` |
 | `--process-blocks--gap` | `var(--wp--style--block-gap, 1.5rem)` |
+
 
 ## Development
 
@@ -77,17 +81,8 @@ npm run lint:css  # Stylelint (@humanmade/stylelint-config)
 npm run lint:php  # PHPCS (humanmade/coding-standards)
 ```
 
-### Playground link
+## License
 
-The Playground link above installs the plugin from the `release` branch, which CI builds and publishes on every push to `main` (see `.github/workflows/ci.yml`). If the repository lives somewhere other than `humanmade/process-blocks`, update the URL in `blueprint.json` and in the link above.
+Licensed under the GPL v2 or later. Copyright 2026 Human Made.
 
-## Structure
-
-```
-plugin.php            Plugin header, bootstrap
-inc/namespace.php     Block registration, step tracking, Interactivity API state
-src/process/          Process block (editor, render, styles, view module)
-src/section/          Section block
-src/step/             Step block
-demo/                 Demo content, used by wp-env and Playground
-```
+Demo content includes [MacBook Neo Screen Replacement](https://www.ifixit.com/Guide/MacBook+Neo+Screen+Replacement/210539) by Nick Schultz on [iFixit](https://www.ifixit.com/), and is licensed under [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/).
