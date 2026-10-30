@@ -247,6 +247,10 @@
 
 .wp-block-process-blocks-process__complete {
 	margin: 0;
+
+	&:disabled {
+		cursor: default;
+	}
 }
 
 // Compact button on small screens, overriding the theme's button styles.
@@ -384,6 +388,8 @@
 }
 
 .wp-block-process-blocks-step {
+	// Let wide inner blocks scroll inside the step instead of widening its grid track.
+	min-width: 0;
 	padding: 1.25em 1.5em;
 	border: 1px solid var( --process-blocks--border );
 	border-radius: var( --process-blocks--radius );
@@ -453,6 +459,10 @@
 	background: transparent;
 	color: inherit;
 	cursor: pointer;
+
+	&:disabled {
+		cursor: default;
+	}
 
 	&:hover {
 		border-color: var( --process-blocks--accent );

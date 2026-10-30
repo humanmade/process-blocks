@@ -40,6 +40,8 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 		<button
 			type="button"
 			class="wp-block-process-blocks-step__toggle"
+			disabled
+			data-wp-bind--disabled="!context.isLoaded"
 			aria-pressed="false"
 			data-wp-bind--aria-pressed="state.isStepComplete"
 			data-wp-on--click="actions.toggleStep"

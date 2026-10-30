@@ -79,20 +79,50 @@ $render_item = function ( array $step ): void {
 	<?php
 };
 
-$wrapper_attributes = get_block_wrapper_attributes( [
+$wrapper_options = [
 	'id' => $attributes['anchor'] ?? $process['id'],
 	'data-wp-interactive' => Process_Blocks\STORE_NAMESPACE,
 	'data-wp-context' => wp_json_encode( $context, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP ),
 	'data-wp-init' => 'callbacks.load',
 	'data-wp-watch' => 'callbacks.save',
 	'data-wp-class--is-all-complete' => 'state.isAllComplete',
-] );
+];
+
+// Completion icons need both authored colours, including when their number is
+// made transparent. Resolve presets through the native block colour style engine.
+$background = isset( $attributes['backgroundColor'] )
+	? 'var:preset|color|' . $attributes['backgroundColor']
+	: ( $attributes['style']['color']['background'] ?? null );
+$text = isset( $attributes['textColor'] )
+	? 'var:preset|color|' . $attributes['textColor']
+	: ( $attributes['style']['color']['text'] ?? null );
+if ( $background || $text ) {
+	$styles = wp_style_engine_get_styles( [
+		'color' => [
+			'background' => $background,
+			'text' => $text,
+		],
+	] );
+	$colours = [];
+	if ( ! empty( $styles['declarations']['background-color'] ) ) {
+		$colours[] = '--process-blocks--surface:' . $styles['declarations']['background-color'];
+	}
+	if ( ! empty( $styles['declarations']['color'] ) ) {
+		$colours[] = '--process-blocks--accent:' . $styles['declarations']['color'];
+	}
+	$wrapper_options['style'] = implode( ';', $colours );
+}
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_options );
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<noscript>
+		<p><?php esc_html_e( 'JavaScript is required to use the checklist controls. You can still read all steps below.', 'process-blocks' ); ?></p>
+	</noscript>
 	<?php if ( $show_summary ) : ?>
 		<nav
 			class="wp-block-process-blocks-process__summary"
 			aria-label="<?php esc_attr_e( 'Process steps', 'process-blocks' ); ?>"
+			tabindex="-1"
 		>
 			<div class="wp-block-process-blocks-process__summary-header">
 				<p class="wp-block-process-blocks-process__count">
@@ -163,6 +193,8 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 				<button
 					type="button"
 					class="wp-block-process-blocks-process__complete wp-element-button"
+					disabled
+					data-wp-bind--disabled="!context.isLoaded"
 					data-wp-on--click="actions.completeActive"
 					data-wp-class--is-hidden="!state.canCompleteActive"
 				>
@@ -178,6 +210,8 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 					<button
 						type="button"
 						class="wp-block-process-blocks-process__undo"
+						disabled
+						data-wp-bind--disabled="!context.isLoaded"
 						data-wp-on--click="actions.uncompleteActive"
 						data-wp-bind--aria-label="state.undoLabel"
 					>
