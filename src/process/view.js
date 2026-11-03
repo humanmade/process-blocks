@@ -285,7 +285,7 @@ const { state } = store( 'process-blocks', {
 		/**
 		 * Mark the active step complete, and move on to the next incomplete step.
 		 */
-		*completeActive() {
+		completeActive() {
 			const context = getContext();
 			const { ref } = getElement();
 			const index = state.activeIndex;
@@ -299,9 +299,10 @@ const { state } = store( 'process-blocks', {
 			if ( next === -1 ) {
 				context.announcement = state.i18n.finished;
 				// The completion button disappears; focus its replacement after rendering.
-				yield new Promise( resolve => window.requestAnimationFrame( resolve ) );
-				ref.closest( '.wp-block-process-blocks-process' )
-					?.querySelector( '.wp-block-process-blocks-process__restart' )?.focus( { preventScroll: true } );
+				window.requestAnimationFrame( () => {
+					ref.closest( '.wp-block-process-blocks-process' )
+						?.querySelector( '.wp-block-process-blocks-process__restart' )?.focus( { preventScroll: true } );
+				} );
 				return;
 			}
 
@@ -312,16 +313,17 @@ const { state } = store( 'process-blocks', {
 		/**
 		 * Mark the active step as incomplete.
 		 */
-		*uncompleteActive() {
+		uncompleteActive() {
 			const context = getContext();
 			const { ref } = getElement();
 			const index = state.activeIndex;
 			context.completed = context.completed.filter( completed => completed !== index );
 			context.announcement = format( state.i18n.incomplete, index + 1 );
 			// Undo is hidden when the action is incomplete. Keep focus in the step bar.
-			yield new Promise( resolve => window.requestAnimationFrame( resolve ) );
-			ref.closest( '.wp-block-process-blocks-process__bar' )
-				?.querySelector( '.wp-block-process-blocks-process__complete' )?.focus( { preventScroll: true } );
+			window.requestAnimationFrame( () => {
+				ref.closest( '.wp-block-process-blocks-process__bar' )
+					?.querySelector( '.wp-block-process-blocks-process__complete' )?.focus( { preventScroll: true } );
+			} );
 		},
 
 		/**
@@ -359,7 +361,7 @@ const { state } = store( 'process-blocks', {
 		/**
 		 * Clear all progress, and return to the start of the process.
 		 */
-		*reset() {
+		reset() {
 			const context = getContext();
 			const { ref } = getElement();
 			const process = ref.closest( '.wp-block-process-blocks-process' );
@@ -371,7 +373,6 @@ const { state } = store( 'process-blocks', {
 				block: 'start',
 			} );
 			// Reset becomes disabled and Start again disappears; return to the overview.
-			yield new Promise( resolve => window.requestAnimationFrame( resolve ) );
 			process?.querySelector( '.wp-block-process-blocks-process__summary, .wp-block-process-blocks-step' )
 				?.focus( { preventScroll: true } );
 		},

@@ -110,21 +110,19 @@ if ( $background || $text ) {
 	if ( ! empty( $styles['declarations']['color'] ) ) {
 		$colours[] = '--process-blocks--accent:' . $styles['declarations']['color'];
 	}
-	$wrapper_options['style'] = implode( ';', $colours );
+	// Filter raw declarations and terminate them before core appends its styles.
+	$wrapper_options['style'] = safecss_filter_attr( implode( ';', $colours ) ) . ';';
 }
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_options );
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<noscript>
-		<p><?php esc_html_e( 'JavaScript is required to use the checklist controls. You can still read all steps below.', 'process-blocks' ); ?></p>
-	</noscript>
 	<?php if ( $show_summary ) : ?>
 		<nav
 			class="wp-block-process-blocks-process__summary"
 			aria-label="<?php esc_attr_e( 'Process steps', 'process-blocks' ); ?>"
 			tabindex="-1"
 		>
-			<div class="wp-block-process-blocks-process__summary-header">
+			<div class="wp-block-process-blocks-process__summary-header" hidden data-wp-bind--hidden="!context.isLoaded">
 				<p class="wp-block-process-blocks-process__count">
 					<?php echo $progress_count; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</p>
@@ -176,7 +174,7 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_options );
 		</nav>
 	<?php endif ?>
 
-	<div class="wp-block-process-blocks-process__bar">
+	<div class="wp-block-process-blocks-process__bar" hidden data-wp-bind--hidden="!context.isLoaded">
 		<div class="wp-block-process-blocks-process__bar-inner">
 			<div class="wp-block-process-blocks-process__status">
 				<span class="wp-block-process-blocks-process__status-label">
@@ -193,8 +191,6 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_options );
 				<button
 					type="button"
 					class="wp-block-process-blocks-process__complete wp-element-button"
-					disabled
-					data-wp-bind--disabled="!context.isLoaded"
 					data-wp-on--click="actions.completeActive"
 					data-wp-class--is-hidden="!state.canCompleteActive"
 				>
@@ -210,8 +206,6 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_options );
 					<button
 						type="button"
 						class="wp-block-process-blocks-process__undo"
-						disabled
-						data-wp-bind--disabled="!context.isLoaded"
 						data-wp-on--click="actions.uncompleteActive"
 						data-wp-bind--aria-label="state.undoLabel"
 					>
