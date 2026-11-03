@@ -1,0 +1,92 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "process-blocks/process",
+  "version": "0.1.0",
+  "title": "Process",
+  "category": "text",
+  "description": "A step-by-step process, with a progress checklist and a sticky bar showing the current step.",
+  "keywords": [
+    "steps",
+    "guide",
+    "tutorial",
+    "checklist",
+    "how-to",
+    "instructions"
+  ],
+  "textdomain": "process-blocks",
+  "attributes": {
+    "showSummary": {
+      "type": "boolean",
+      "default": true
+    },
+    "headingLevel": {
+      "type": "number",
+      "default": 2
+    }
+  },
+  "providesContext": {
+    "process-blocks/headingLevel": "headingLevel"
+  },
+  "usesContext": [
+    "postId"
+  ],
+  "supports": {
+    "anchor": true,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "typography": {
+      "fontSize": true
+    },
+    "html": false,
+    "interactivity": true
+  },
+  "example": {
+    "innerBlocks": [
+      {
+        "name": "process-blocks/step",
+        "attributes": {
+          "title": "Gather your tools"
+        },
+        "innerBlocks": [
+          {
+            "name": "core/paragraph",
+            "attributes": {
+              "content": "You’ll need a screwdriver and a spudger."
+            }
+          }
+        ]
+      },
+      {
+        "name": "process-blocks/step",
+        "attributes": {
+          "title": "Remove the back panel"
+        },
+        "innerBlocks": [
+          {
+            "name": "core/paragraph",
+            "attributes": {
+              "content": "Unscrew the four screws holding the panel in place."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScriptModule": "file:./view.js",
+  "render": "file:./render.php"
+}
