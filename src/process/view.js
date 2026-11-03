@@ -25,12 +25,12 @@ import {
 } from '@wordpress/interactivity';
 
 /**
- * Sort step indexes numerically.
+ * Deduplicate and sort step indexes numerically.
  *
  * @param {number[]} indexes Step indexes.
  * @returns {number[]} Sorted indexes.
  */
-const sortIndexes = indexes => [ ...indexes ].sort( ( a, b ) => a - b );
+const sortIndexes = indexes => [ ...new Set( indexes ) ].sort( ( a, b ) => a - b );
 
 /**
  * Get the index of the current (first incomplete) step.
@@ -105,7 +105,9 @@ const goToStep = ( context, index ) => {
  * @returns {number} Step index, or -1 if no step has been reached.
  */
 const getViewingIndex = ( elements, bar ) => {
-	const barBottom = bar.getBoundingClientRect().bottom;
+	// On short screens the theme lets the bar scroll away. Track the viewport
+	// once it is off screen, rather than a line above the visible steps.
+	const barBottom = Math.max( 0, bar.getBoundingClientRect().bottom );
 	const line = barBottom + Math.min( 120, ( window.innerHeight - barBottom ) / 4 );
 	const tops = elements.map( element => element?.getBoundingClientRect().top ?? Infinity );
 
@@ -285,6 +287,7 @@ const { state } = store( 'process-blocks', {
 		 */
 		completeActive() {
 			const context = getContext();
+			const { ref } = getElement();
 			const index = state.activeIndex;
 			if ( index === -1 || context.completed.includes( index ) ) {
 				return;
@@ -295,6 +298,11 @@ const { state } = store( 'process-blocks', {
 			const next = getNextIncomplete( context, index );
 			if ( next === -1 ) {
 				context.announcement = state.i18n.finished;
+				// The completion button disappears; focus its replacement after rendering.
+				window.requestAnimationFrame( () => {
+					ref.closest( '.wp-block-process-blocks-process' )
+						?.querySelector( '.wp-block-process-blocks-process__restart' )?.focus( { preventScroll: true } );
+				} );
 				return;
 			}
 
@@ -307,9 +315,15 @@ const { state } = store( 'process-blocks', {
 		 */
 		uncompleteActive() {
 			const context = getContext();
+			const { ref } = getElement();
 			const index = state.activeIndex;
 			context.completed = context.completed.filter( completed => completed !== index );
 			context.announcement = format( state.i18n.incomplete, index + 1 );
+			// Undo is hidden when the action is incomplete. Keep focus in the step bar.
+			window.requestAnimationFrame( () => {
+				ref.closest( '.wp-block-process-blocks-process__bar' )
+					?.querySelector( '.wp-block-process-blocks-process__complete' )?.focus( { preventScroll: true } );
+			} );
 		},
 
 		/**
@@ -349,14 +363,18 @@ const { state } = store( 'process-blocks', {
 		 */
 		reset() {
 			const context = getContext();
+			const { ref } = getElement();
+			const process = ref.closest( '.wp-block-process-blocks-process' );
 			context.completed = [];
 			context.announcement = state.i18n.reset;
 
-			const { ref } = getElement();
-			ref.closest( '.wp-block-process-blocks-process' )?.scrollIntoView( {
+			process?.scrollIntoView( {
 				behavior: prefersReducedMotion() ? 'auto' : 'smooth',
 				block: 'start',
 			} );
+			// Reset becomes disabled and Start again disappears; return to the overview.
+			process?.querySelector( '.wp-block-process-blocks-process__summary, .wp-block-process-blocks-step' )
+				?.focus( { preventScroll: true } );
 		},
 	},
 	callbacks: {
@@ -385,11 +403,26 @@ const { state } = store( 'process-blocks', {
 				return;
 			}
 
+			// Native fragment navigation happens before the hydrated bar is measured.
+			// Align a linked step once the real clearance is available, without taking focus.
+			const linkedIndex = context.steps.findIndex( step => window.location.hash === `#${ step.id }` );
+			let linkedStep = linkedIndex === -1 ? null : document.getElementById( context.steps[ linkedIndex ].id );
+			if ( linkedStep ) {
+				context.viewing = linkedIndex;
+			}
+
 			// Track the sticky bar's height, so steps scroll clear of it (with
 			// a little breathing room).
 			const resizeObserver = new window.ResizeObserver( () => {
 				const offset = `calc( var( --process-blocks--sticky-top ) + ${ bar.offsetHeight + 16 }px )`;
 				ref.style.setProperty( '--process-blocks--scroll-offset', offset );
+				if ( linkedStep ) {
+					linkedStep.scrollIntoView( {
+						behavior: 'instant',
+						block: 'start',
+					} );
+					linkedStep = null;
+				}
 			} );
 			resizeObserver.observe( bar );
 

@@ -79,22 +79,50 @@ $render_item = function ( array $step ): void {
 	<?php
 };
 
-$wrapper_attributes = get_block_wrapper_attributes( [
+$wrapper_options = [
 	'id' => $attributes['anchor'] ?? $process['id'],
 	'data-wp-interactive' => Process_Blocks\STORE_NAMESPACE,
 	'data-wp-context' => wp_json_encode( $context, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP ),
 	'data-wp-init' => 'callbacks.load',
 	'data-wp-watch' => 'callbacks.save',
 	'data-wp-class--is-all-complete' => 'state.isAllComplete',
-] );
+];
+
+// Completion icons need both authored colours, including when their number is
+// made transparent. Resolve presets through the native block colour style engine.
+$background = isset( $attributes['backgroundColor'] )
+	? 'var:preset|color|' . $attributes['backgroundColor']
+	: ( $attributes['style']['color']['background'] ?? null );
+$text = isset( $attributes['textColor'] )
+	? 'var:preset|color|' . $attributes['textColor']
+	: ( $attributes['style']['color']['text'] ?? null );
+if ( $background || $text ) {
+	$styles = wp_style_engine_get_styles( [
+		'color' => [
+			'background' => $background,
+			'text' => $text,
+		],
+	] );
+	$colours = [];
+	if ( ! empty( $styles['declarations']['background-color'] ) ) {
+		$colours[] = '--process-blocks--surface:' . $styles['declarations']['background-color'];
+	}
+	if ( ! empty( $styles['declarations']['color'] ) ) {
+		$colours[] = '--process-blocks--accent:' . $styles['declarations']['color'];
+	}
+	// Filter raw declarations and terminate them before core appends its styles.
+	$wrapper_options['style'] = safecss_filter_attr( implode( ';', $colours ) ) . ';';
+}
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_options );
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php if ( $show_summary ) : ?>
 		<nav
 			class="wp-block-process-blocks-process__summary"
 			aria-label="<?php esc_attr_e( 'Process steps', 'process-blocks' ); ?>"
+			tabindex="-1"
 		>
-			<div class="wp-block-process-blocks-process__summary-header">
+			<div class="wp-block-process-blocks-process__summary-header" hidden data-wp-bind--hidden="!context.isLoaded">
 				<p class="wp-block-process-blocks-process__count">
 					<?php echo $progress_count; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</p>
@@ -146,7 +174,7 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 		</nav>
 	<?php endif ?>
 
-	<div class="wp-block-process-blocks-process__bar">
+	<div class="wp-block-process-blocks-process__bar" hidden data-wp-bind--hidden="!context.isLoaded">
 		<div class="wp-block-process-blocks-process__bar-inner">
 			<div class="wp-block-process-blocks-process__status">
 				<span class="wp-block-process-blocks-process__status-label">

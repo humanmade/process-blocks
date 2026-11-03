@@ -22,6 +22,13 @@
 	--process-blocks--scroll-offset: calc( var( --process-blocks--sticky-top ) + 6rem );
 }
 
+// Keep JavaScript-only controls hidden until the process has loaded.
+.wp-block-process-blocks-process__summary-header[hidden],
+.wp-block-process-blocks-process__bar[hidden],
+.wp-block-process-blocks-step__toggle[hidden] {
+	display: none;
+}
+
 /*
  * Summary checklist.
  */
@@ -384,6 +391,8 @@
 }
 
 .wp-block-process-blocks-step {
+	// Let wide inner blocks scroll inside the step instead of widening its grid track.
+	min-width: 0;
 	padding: 1.25em 1.5em;
 	border: 1px solid var( --process-blocks--border );
 	border-radius: var( --process-blocks--radius );
